@@ -1,0 +1,3 @@
+[submodule "ThesaurusSpider"]
+	path = app/ThesaurusSpider
+	url = https://github.com/xe5700/ThesaurusSpider.git
