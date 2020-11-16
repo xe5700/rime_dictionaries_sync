@@ -28,7 +28,6 @@ RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --runtime d
 chmod +x /usr/bin/dotnet
 RUN mkdir -p imewlconverter && \ 
 curl -L https://github.com/studyzy/imewlconverter/releases/download/v${imewlconverter_version}/imewlconverter_Linux_Mac.tar.gz | tar xvz -C imewlconverter
-VOLUME ["/dicts", "/remote", "/config"]
 COPY --from=rclone/rclone /usr/local/bin/rclone /usr/local/bin/
 
 ADD app ./
@@ -36,7 +35,8 @@ RUN pip2 install user_agent && \
 set +e && \
 pip3 install -r requirements.txt && \
 rm -r /root/.cache
-RUN adduser app --system && chmod -R 777 /tmp && chown -R app /app /dicts /remote /config
+RUN adduser app -D --h /config && mkdir -p /dicts /remote /config && chmod -R 777 /tmp && chown -R app:app /app /dicts /remote /config
+VOLUME ["/dicts", "/remote", "/config"]
 USER app
 CMD ["python3","./app.py" ]
 ENV TZ=Asia/Shanghai
