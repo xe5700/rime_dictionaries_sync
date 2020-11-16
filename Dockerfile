@@ -15,6 +15,7 @@ ENV USE_RCLONE="False"
 ENV REMOTE_CONFIG="remote"
 ENV XDG_CONFIG_HOME="/config"
 ENV REMOTE_SYNC_PATH="/RIME_DICT/"
+ENV SOGOU_NEW_WORD="True"
 ARG imewlconverter_version="2.7.0"
 RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
 #Use huaweicloud mirror
