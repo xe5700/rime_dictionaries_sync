@@ -81,7 +81,7 @@ version: "{ver}"
 
 '''
 convert: str
-invalidfns = re.compile('【|】|（|）|！|※|《|》')
+invalidfns = re.compile('【|】|（|）|！|※|《|》| ')
 def convert_file(file_name: str):
 		cv2 = convert.format(i=file_name, type="{type}")
 		if file_name.endswith(".scel"):
@@ -139,16 +139,9 @@ def convert_file(file_name: str):
 			luna()
 			clover()
 		print("成功转换 "+ ndire_name)
-def dl_new_word():
-	with urllib.request.urlopen("https://pinyin.sogou.com/d/dict/download_cell.php?id=4&name=%E7%BD%91%E7%BB%9C%E6%B5%81%E8%A1%8C%E6%96%B0%E8%AF%8D%E3%80%90%E5%AE%98%E6%96%B9%E6%8E%A8%E8%8D%90%E3%80%91&f=detail") as u:
-		newwowrds = u.read()
-		os.system("mkdir -p /tmp/dicts/sogou/")
-		with open("/tmp/dicts/sogou/网络流行新词.scel", "w+") as target:
-			target.write(newwowrds)
-			pass
+
 def main():
 	global convert, dict_type
-	sogou_new_word = str2bool(os.environ["SOGOU_NEW_WORD"])
 	dict_type = os.environ.get("DICT_TYPE","clover")
 	d_baidu: Popen = None
 	d_sogou: Popen = None
@@ -167,8 +160,7 @@ def main():
 		
 	if d_baidu != None:
 		d_baidu.wait()
-	if sogou_new_word:
-		dl_new_word()
+
 	#d_qq.wait()
 	print("查找词库")
 	alldires = getfiles("/tmp/dicts/")
