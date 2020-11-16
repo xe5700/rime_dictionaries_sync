@@ -25,7 +25,6 @@ def main():
 	rclone = str2bool(env["USE_RCLONE"])
 	remote_config = env["REMOTE_CONFIG"]
 	remote_path = env["REMOTE_SYNC_PATH"]
-	rclone1: Popen = None
 	def sync_dir_to_local():
 		print("同步文件夹到本地")
 		run(["rclone", "sync", f"{remote_config}:{remote_path}","--create-empty-src-dirs", "/remote", "-v"])
@@ -74,9 +73,6 @@ def main():
 		print(f"下一次执行时间 {nextruntime}")
 		sleep(delayt)
 		dl_and_sync()
-	if rclone1 != None:
-		rclone1.send_signal(2)
-		rclone1.wait(60000)
 if __name__ == "__main__":
 	print('''	
 ______ ________  ___ _____  ______ _____ _____ _____   _   _____________  ___ _____ _____ 
