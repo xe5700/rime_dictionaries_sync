@@ -10,7 +10,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh '''
-                    docker build ./rime_dictionaries_update -t $TAG1
+                    docker build . -t $TAG1
                 '''
             }
         }

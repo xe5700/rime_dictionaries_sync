@@ -36,7 +36,7 @@ RUN pip2 install user_agent && \
 set +e && \
 pip3 install -r requirements.txt && \
 rm -r /root/.cache
-RUN adduser app --system && chmod -R 777 /tmp/ && mkdir /dicts /remote /config && chown -R app /app /dicts /remote /config
+RUN adduser app --system && chmod -R 777 /tmp/ && mkdir /config && chown -R app /app /dicts /remote /config
 USER app
 CMD ["python3","./app.py" ]
 ENV TZ=Asia/Shanghai
