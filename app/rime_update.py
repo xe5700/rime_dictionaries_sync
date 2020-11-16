@@ -9,8 +9,9 @@ from concurrent.futures import ThreadPoolExecutor
 import re
 import io
 import datetime
+from utils import *
 
-DICT_TYPE: str
+dict_type: str
 def getfiles(p: str) -> List[str]:
 	files = []
 	for f in os.listdir(p):
@@ -38,7 +39,7 @@ def getnametype(p: str):
 	
 yaml_header_group = '''# Rime dictionary
 # encoding: utf-8
-#
+#d
 # 自动生成词库{name}
 #
 # 部署位置：
@@ -78,6 +79,7 @@ version: "{ver}"
 # 自定义词语
 
 '''
+convert: str
 invalidfns = re.compile('【|】|（|）|！|※|《|》')
 def convert_file(file_name: str):
 		cv2 = convert.format(i=file_name, type="{type}")
@@ -97,8 +99,8 @@ def convert_file(file_name: str):
 			cv2 = cv2.format(type="bdpy")
 		run(cv2, shell=True, stdout=subprocess.DEVNULL)
 		ndire_name = ""
-		# 朙月拼音
-		if DICT_TYPE == "luna":
+		def luna():
+			global ndire_name
 			dire_type = "luna."+getnametype(file_name).replace('/','.')
 			dire_type = invalidfns.sub('_',dire_type)
 			ndire_name = dire_type+".dict.yaml"
@@ -111,11 +113,13 @@ def convert_file(file_name: str):
 					data += dict_info
 					f2.write(data)
 					pass
-		# 四叶草拼音
-		elif DICT_TYPE == "clover":
+			os.remove("/tmp/rime.txt")
+			os.remove("/tmp/rime2.txt")
+		def clover():
+			global ndire_name
 			dire_type = getnametype(file_name).replace('/','.')
 			dire_type = invalidfns.sub('_',dire_type)
-			ndire_name = dire_type+".dict.yaml"
+			ndire_name = "clover."+dire_type+".dict.yaml"
 			with open("/tmp/rime.txt", "r") as f:
 				dict_info = f.read()
 				with open("/tmp/dicts_out/"+ndire_name, "w+") as f2:
@@ -123,19 +127,37 @@ def convert_file(file_name: str):
 					data += dict_info
 					f2.write(data)
 					pass
+			os.remove("/tmp/rime.txt")
+		# 朙月拼音
+		if dict_type == "luna":
+			luna()
+		# 四叶草拼音
+		elif dict_type == "clover":
+			clover()
+		elif dict_type == "all":
+			luna()
+			clover()
 		print("成功转换 "+ ndire_name)
 
 def main():
-	DICT_TYPE = os.environ.get("DICT_TYPE","clover")
-	os.environ['PATH'] = f"{os.environ['PATH']}:/root/.dotnet"
-	print("正在下载搜狗词库")
-	d_sogou = Popen(["python2", "ThesaurusSpider/SougouThesaurusSpider/multiThreadDownload.py", "--dir_re", os.environ["DIR_RE"], "--file_re", os.environ["FILE_RE"]])
-	#print("正在下载百度词库")
-	#d_baidu = Popen(["python2", "ThesaurusSpider/BaiduTheaurusSpider/multiThreadDownload.py"])
+	global convert, dict_type
+	dict_type = os.environ.get("DICT_TYPE","clover")
+	d_baidu: Popen = None
+	d_sogou: Popen = None
+	if str2bool(os.environ["USE_SOGOU"]):
+		print("正在下载搜狗词库")
+		d_sogou = Popen(["python2", "ThesaurusSpider/SougouThesaurusSpider/multiThreadDownload.py"])
+	if str2bool(os.environ["USE_BAIDU"]):
+		print("正在下载百度词库")
+		d_baidu = Popen(["python2", "ThesaurusSpider/BaiduTheaurusSpider/multiThreadDownload.py"])
 	#print("正在下载QQ词库")
 	#d_qq = Popen(["python2", "ThesaurusSpider/QQTheaurusSpider/multiThreadDownload.py"])
-	d_sogou.wait()
-	#d_baidu.wait()
+	d_sogou: subprocess.Popen
+	d_baidu: subprocess.Popen
+	if d_sogou != None:
+		d_sogou.wait()
+	if d_baidu != None:
+		d_baidu.wait()
 	#d_qq.wait()
 	print("查找词库")
 	alldires = getfiles("/tmp/dicts/")
@@ -147,17 +169,38 @@ def main():
 	for dire in alldires:
 		pool.submit(convert_file, dire)
 	pool.shutdown()
+	
+	def mk_all(alldicts: List[str],type: str):
+			with open(f"/tmp/dicts_out/{type}.autoupdate.dict.yaml", "w+") as of:
+				groupsx = io.StringIO()
+				for f in alldicts:
+					fl=f.rfind(".dict.yaml")
+					f=f[:fl]
+					groupsx.write(f"   - {f}\n")
+				out = yaml_header_group.format(name=f"{type}.autoupdate",imports=groupsx.getvalue(), ver=datetime.datetime.now().isoformat())
+				of.write(out)
+				print(out)
+				print("成功输出词库集 "+of.name)
+			os.system('mv /tmp/dicts_out/* /dicts/')
 	alldicts = os.listdir("/tmp/dicts_out")
-	with open("/tmp/dicts_out/{}.autoupdate.dict.yaml".format(DICT_TYPE), "w+") as of:
-		groupsx = io.StringIO()
-		for f in alldicts:
-			f=f[:f.find(".dict.yaml")]
-			groupsx.write("   - {}\n".format(f))
-		out = yaml_header_group.format(name="{}.autoupdate".format(DICT_TYPE),imports=groupsx.getvalue(), ver=datetime.datetime.now().isoformat())
-		of.write(out)
-		print(out)
-		print("成功输出词库集 "+of.name)
-	os.system('mv /tmp/dicts_out/* /dicts/')
-
+	dicts_luna = []
+	dicts_clover = []
+	for i in alldicts:
+		if i.startswith("clover."):
+			dicts_clover.append(i)
+		elif i.startswith("luna."):
+			dicts_luna.append(i)
+	if len(dicts_luna) > 0:
+		mk_all(dicts_luna, "luna")
+	if len(dicts_clover) > 0:
+		mk_all(dicts_clover, "clover")
+	print("执行清理")
+	for f in os.listdir("/tmp/"):
+		fn = f"/tmp/{f}"
+		print(f"清理 {fn}")
+		if path.isdir(fn):
+			shutil.rmtree(fn)
+		else:
+			os.remove(fn)
 if __name__ == "__main__":
 	main()
