@@ -8,8 +8,8 @@ from concurrent.futures import ThreadPoolExecutor
 from os import path
 from subprocess import run, Popen
 from typing import List
-
 from utils import *
+import pypinyin
 
 dict_type: str
 
@@ -81,7 +81,7 @@ version: "{ver}"
 ...
 '''
 convert: str
-invalidfns = re.compile('[【】（）！※《》 ]')
+invalidfns = re.compile('[【】（）！※《》 -]')
 
 
 def convert_file(file_name: str):
@@ -109,9 +109,10 @@ def convert_file(file_name: str):
     # noinspection PyGlobalUndefined
     def process_1(typen: str, func):
         global ndire_name
-        fn_pipe = Popen(f"echo {file_name} | opencc -c s2t.json", shell=True, stdout=subprocess.PIPE)
-        fn_pipe.wait()
-        fn_name = fn_pipe.stdout.read().decode()
+        fn_name = ''.join(pypinyin.lazy_pinyin(
+            file_name, style=pypinyin.Style.TONE3, neutral_tone_with_five=True,
+            strict=False
+        ))
         dire_type = f"{typen}." + getnametype(fn_name).replace('/', '.')
         dire_type = invalidfns.sub('_', dire_type)
         ndire_name = dire_type + ".dict.yaml"
@@ -186,7 +187,7 @@ def main():
             for f in alldicts:
                 fl = f.rfind(".dict.yaml")
                 f = f[:fl]
-                groupsx.write(f"   - {f}\n")
+                groupsx.write(f"   - '{f}'\n")
             out = yaml_header_group.format(name=f"{type}.autoupdate", imports=groupsx.getvalue(),
                                            ver=datetime.datetime.now().isoformat())
             of.write(out)
