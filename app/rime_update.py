@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 import re
 import io
 import datetime
+import urllib.request
 from utils import *
 
 dict_type: str
@@ -80,7 +81,7 @@ version: "{ver}"
 
 '''
 convert: str
-invalidfns = re.compile('【|】|（|）|！|※|《|》')
+invalidfns = re.compile('【|】|（|）|！|※|《|》| ')
 def convert_file(file_name: str):
 		cv2 = convert.format(i=file_name, type="{type}")
 		if file_name.endswith(".scel"):
@@ -159,8 +160,10 @@ def main():
 	d_baidu: subprocess.Popen
 	if d_sogou != None:
 		d_sogou.wait()
+		
 	if d_baidu != None:
 		d_baidu.wait()
+
 	#d_qq.wait()
 	print("查找词库")
 	alldires = getfiles("/tmp/dicts/")
