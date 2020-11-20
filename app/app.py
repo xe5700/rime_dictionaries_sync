@@ -29,12 +29,13 @@ def main():
 
     def sync_dir_to_local():
         print("同步文件夹到本地")
-        run(["rclone", "sync", f"{remote_config}:{remote_path}", "--create-empty-src-dirs", "/remote", "-v"])
+        run(["rclone", "sync", f"{remote_config}:{remote_path}", "--create-empty-src-dirs", "/remote", "-v",
+             "--include-from", "rime_dict_update_sync_filelist.txt"])
 
     def sync_dir_to_remote():
         print("同步文件夹到远程")
         run(["rclone", "sync", "/remote", f"{remote_config}:{remote_path}", "--create-empty-src-dirs", "--checksum",
-             "-v", "--exclude", "*.txt"])
+             "-v", "--include-from", "rime_dict_update_sync_filelist.txt"])
 
     def dl_and_sync():
         print("开始下载并生成词库")
