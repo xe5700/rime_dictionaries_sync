@@ -37,7 +37,7 @@ set +e && \
 pip3 install -r requirements.txt && \
 rm -r /root/.cache
 RUN adduser app -D --h /config && mkdir -p /dicts /remote /config && chmod -R 777 /tmp && chown -R app:app /app /dicts /remote /config
-VOLUME ["/dicts", "/remote", "/config"]
+VOLUME ["/config"]
 USER app
 CMD ["python3","./app.py" ]
 ENV TZ=Asia/Shanghai
