@@ -58,9 +58,9 @@ yaml_header_group = '''# Rime dictionary
 ---
 name: {name}
 version: "{ver}"
-   import_tables:
+sort: by_weight
+import_tables:
 {imports}
-...
 '''
 
 yaml_header = '''# Rime dictionary
@@ -75,17 +75,13 @@ yaml_header = '''# Rime dictionary
 #
 # 於重新部署後生效
 #
-
 ---
 name: {name}
 version: "{ver}"
 ...
-
-# 自定义词语
-
 '''
 convert: str
-invalidfns = re.compile('【|】|（|）|！|※|《|》| ')
+invalidfns = re.compile('[【】（）！※《》 ]')
 
 
 def convert_file(file_name: str):
