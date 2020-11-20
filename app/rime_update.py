@@ -101,7 +101,10 @@ def convert_file(file_name: str):
 		ndire_name = ""
 		def luna():
 			global ndire_name
-			dire_type = "luna."+getnametype(file_name).replace('/','.')
+			fn_pipe = Popen(f"echo {file_name} | opencc -c s2t.json", stdout=subprocess.PIPE)
+			fn_pipe.wait()
+			fn_name = fn_pipe.stdout.read()
+			dire_type = "luna."+getnametype(fn_name).replace('/','.')
 			dire_type = invalidfns.sub('_',dire_type)
 			ndire_name = dire_type+".dict.yaml"
 			# 朙月拼音需要转换为繁体才可以使用

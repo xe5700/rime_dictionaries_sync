@@ -34,7 +34,8 @@ def main():
 		run(["rclone", "sync", "/remote", f"{remote_config}:{remote_path}","--create-empty-src-dirs", "--checksum", "-v", "--exclude","*.txt"])
 	def dl_and_sync():
 		print("开始下载并生成词库")
-		sync_dir_to_local()
+		if rclone:
+			sync_dir_to_local()
 		rime_update.main()
 		if rclone:
 			for user in os.listdir("/remote"):
