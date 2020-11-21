@@ -1,5 +1,1 @@
 */*.autoupdate.dict.yaml
-*/clover.sogou.*.dict.yaml
-*/clover.baidu.*.dict.yaml
-*/luna.sogou.*.dict.yaml
-*/luna.baidu.*.dict.yaml

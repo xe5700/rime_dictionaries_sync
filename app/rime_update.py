@@ -101,7 +101,10 @@ def convert_file(file_name: str):
         cv2 = cv2.format(type="sgpybin")
     elif file_name.endswith(".bdpy"):
         cv2 = cv2.format(type="bdpy")
-    run(cv2, shell=True, stdout=subprocess.DEVNULL)
+    ret = run(cv2, shell=True, stdout=subprocess.DEVNULL)
+    if ret.returncode != 0:
+        print(f"文件{file_name}转换失败！这个词库将不会被添加到词库集。")
+        return
     ndire_name = ""
 
     def process_default() -> str:
@@ -115,7 +118,7 @@ def convert_file(file_name: str):
     def process_1(typen: str, func: Callable[[], str]):
         global ndire_name
         dicts_inf = func()
-        with open(f"/tmp/{typen}.txt", "w+") as f:
+        with open(f"/tmp/{typen}.txt", "a+") as f:
             f.seek(os.SEEK_END)
             f.write(dicts_inf)
 
