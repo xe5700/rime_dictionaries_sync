@@ -29,12 +29,12 @@ def main():
 
     def sync_dir_to_local():
         print("同步文件夹到本地")
-        run(["rclone", "sync", f"{remote_config}:{remote_path}", "--create-empty-src-dirs", "/remote", "-v",
+        run(["rclone", "sync", f"{remote_config}:{remote_path}", "--create-empty-src-dirs", "/dicts", "-v",
              "--include-from", "rime_dict_update_sync_filelist.txt"])
 
     def sync_dir_to_remote():
         print("同步文件夹到远程")
-        run(["rclone", "sync", "/remote", f"{remote_config}:{remote_path}", "--create-empty-src-dirs", "--checksum",
+        run(["rclone", "sync", "/dicts", f"{remote_config}:{remote_path}", "--create-empty-src-dirs", "--checksum",
              "-v", "--include-from", "rime_dict_update_sync_filelist.txt"])
 
     def dl_and_sync():
@@ -43,13 +43,7 @@ def main():
             sync_dir_to_local()
         rime_update.main()
         if rclone:
-            for user in os.listdir("/remote"):
-                if user == "generic":
-                    continue
-                fn = path.join("/remote", user)
-                if path.isdir(fn):
-                    print("开始复制字典")
-                    os.system(f"cp -rf /dicts/* {fn}")
+            os.system(f"cp -rf /dicts/* /remote/")
             sync_dir_to_remote()
 
     print("你的设置为............")
