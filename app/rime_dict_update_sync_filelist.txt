@@ -1,1 +1,1 @@
-*/*.autoupdate.dict.yaml
+*.autoupdate.dict.yaml

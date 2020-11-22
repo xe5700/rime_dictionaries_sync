@@ -2,20 +2,20 @@ FROM alpine:edge
 WORKDIR /app
 # 明月拼音/四叶草拼音 词库自动生成工具
 # 使用DOCKER环境部署，支持WIN，MAC，LINUX。
-ENV USE_BAIDU="False"
-ENV USE_SOGOU="True"
-ENV CRON_DICT_UPDATE="0 3 */7 * *"
-ENV DICT_TYPE="clover"
-ENV SOGOU_DIR_RE="单机游戏"
-ENV SOGOU_FILE_RE="原神|魔兽|帝国"
-ENV BAIDU_DIR_RE="网络游戏"
-ENV BAIDU_FILE_RE="百战天虫Online"
-ENV RUN_ONCE="False"
-ENV USE_RCLONE="False"
-ENV REMOTE_CONFIG="remote"
-ENV XDG_CONFIG_HOME="/config"
-ENV REMOTE_SYNC_PATH="/RIME_DICT/"
-ENV SOGOU_NEW_WORD="True"
+ENV USE_BAIDU "False"
+ENV USE_SOGOU "True"
+ENV CRON_DICT_UPDATE "0 3 */7 * *"
+ENV DICT_TYPES '["clover","luna"]'
+ENV SOGOU_DIR_RE '单机游戏'
+ENV SOGOU_FILE_RE '原神|魔兽|帝国'
+ENV BAIDU_DIR_RE "网络游戏"
+ENV BAIDU_FILE_RE "百战天虫Online"
+ENV RUN_ONCE "False"
+ENV USE_RCLONE "False"
+ENV REMOTE_CONFIG "remote"
+ENV XDG_CONFIG_HOME "/config"
+ENV REMOTE_SYNC_PATH "/RIME_DICT/"
+ENV SOGOU_NEW_WORD "True"
 ARG imewlconverter_version="2.7.0"
 RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
 #Use huaweicloud mirror
