@@ -11,6 +11,7 @@ ENV SOGOU_FILE_RE '原神|魔兽|帝国'
 ENV BAIDU_DIR_RE "网络游戏"
 ENV BAIDU_FILE_RE "百战天虫Online"
 ENV RUN_ONCE "False"
+ENV USE_GIT "False"
 ENV USE_RCLONE "False"
 ENV REMOTE_CONFIG "remote"
 ENV XDG_CONFIG_HOME "/config"
